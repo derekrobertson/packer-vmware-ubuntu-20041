@@ -1,0 +1,48 @@
+{
+    "variables": {
+        "vm_name": "ubuntu20041-base"
+      },
+    "sensitive-variables": [
+    ],  
+    "builders": [
+      {   
+        "type": "vmware-iso",
+        "disk_size": "40960", 
+        "disk_type_id": 0, 
+        "guest_os_type": "ubuntu64Guest",
+        "vm_name": "{{ user `vm_name` }}",
+        "iso_url": "https://releases.ubuntu.com/20.04/ubuntu-20.04.1-live-server-amd64.iso",
+        "iso_checksum": "sha256:443511f6bf12402c12503733059269a2e10dec602916c0a75263e5d990f6bb93",
+        "cpus": 2,
+        "memory": 2048,
+        "headless": "false",
+        "boot_command": [
+         "<esc><esc><esc>",
+         "<enter><wait>",
+         "/casper/vmlinuz ",
+         "root=/dev/sr0 ",
+         "initrd=/casper/initrd ",
+         "autoinstall ",
+         "ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+         "<enter>"
+        ],
+        "boot_wait": "5s",
+        "http_directory": "http",
+        "shutdown_command": "sudo /sbin/halt -p",
+        "ssh_username": "ubuntu",
+        "ssh_password": "ubuntu",
+        "ssh_port": 22,
+        "ssh_handshake_attempts": 20
+      }
+    ],
+    "provisioners": [
+        {
+          "type": "shell",
+          "scripts": [
+              "./apt-update.sh",
+              "./curtin-clean.sh"
+          ]
+        }
+      ],
+    "post-processors": []
+  }
