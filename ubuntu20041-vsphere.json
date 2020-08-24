@@ -1,0 +1,81 @@
+{
+    "variables": {
+        "vcenter_address": "10.1.1.100",
+        "vcenter_cluster": "cluster01",
+        "vcenter_datastore": "datastore1",
+        "vcenter_dc": "Lab",
+        "vcenter_host": "10.1.1.101",
+        "vcenter_ignore_ssl": "true",
+        "vcenter_network": "apps",
+        "vcenter_user": "administrator@vsphere.local",
+        "vcenter_password": "<the password>",
+        "vm_name": "ubuntu20041-amd64-base"
+      },
+    "sensitive-variables": [
+        "vcenter_password"
+    ],  
+    "builders": [
+      {   
+        "type": "vsphere-iso",
+        "convert_to_template": true,
+        "boot_command": [
+          "<esc><esc><esc>",
+          "<enter><wait>",
+          "/casper/vmlinuz ",
+          "root=/dev/sr0 ",
+          "initrd=/casper/initrd ",
+          "autoinstall ",
+          "ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+          "<enter>"
+        ],
+        "boot_wait": "10s",
+        "http_ip": "10.1.1.1",
+        "http_directory": "http",
+        "vcenter_server": "{{ user `vcenter_address` }}",
+        "username": "{{ user `vcenter_user` }}",
+        "password": "{{ user `vcenter_password` }}",
+        "insecure_connection": "{{ user `vcenter_ignore_ssl` }}",
+        "datacenter": "{{ user `vcenter_dc` }}",
+        "CPUs": 2,
+        "RAM": 2048,
+        "vm_name": "{{ user `vm_name` }}",
+        "cluster": "{{ user `vcenter_cluster` }}",
+        "host": "{{ user `vcenter_host` }}",
+        "datastore": "{{ user `vcenter_datastore` }}",
+        "shutdown_command": "sudo /sbin/halt -p",
+        "iso_paths": [
+            "[datastore1] iso/ubuntu-20.04-live-server-amd64.iso"
+          ],
+        "network_adapters": [
+        {
+            "network": "{{ user `vcenter_network` }}",
+            "network_card": "vmxnet3"
+        }
+        ],
+        "storage": [
+            {
+              "disk_size": 40960,
+              "disk_thin_provisioned": true
+            }
+          ],
+        "guest_os_type": "ubuntu64Guest",
+        "disk_controller_type": "pvscsi",
+        "ssh_username": "ubuntu",
+        "ssh_password": "ubuntu",
+        "ssh_port": 22,
+        "ssh_timeout": "20m",
+        "ssh_handshake_attempts": "20"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "scripts": [
+            "./apt-update.sh",
+            "./curtin-clean.sh",
+            "./vmware-allow-customize.sh"
+        ]
+      }
+    ],
+    "post-processors": []
+  }

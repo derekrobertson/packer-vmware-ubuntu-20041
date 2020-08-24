@@ -1,6 +1,6 @@
 {
     "variables": {
-        "vm_name": "ubuntu20041-base"
+        "vm_name": "ubuntu20041-amd64-base"
       },
     "sensitive-variables": [
     ],  
@@ -32,7 +32,7 @@
         "ssh_username": "ubuntu",
         "ssh_password": "ubuntu",
         "ssh_port": 22,
-        "ssh_handshake_attempts": 20
+        "ssh_handshake_attempts": 25
       }
     ],
     "provisioners": [
@@ -40,7 +40,8 @@
           "type": "shell",
           "scripts": [
               "./apt-update.sh",
-              "./curtin-clean.sh"
+              "./curtin-clean.sh",
+              "./vmware-allow-customize.sh"
           ]
         }
       ],

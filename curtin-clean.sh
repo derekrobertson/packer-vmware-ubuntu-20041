@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Removes files leftover from the cloud-config install
-# If these are not removed, cloud-init cannot be run again (for example by Openstack)
+# If these are not removed, cloud-init cannot be run again (for example by Openstack or VMware customization)
 
 FILE=/etc/cloud/cloud.cfg.d/50-curtin-networking.cfg
 if test -f "$FILE"; then

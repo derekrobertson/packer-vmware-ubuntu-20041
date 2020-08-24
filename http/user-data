@@ -5,16 +5,23 @@ autoinstall:
    - systemctl stop ssh # packer tries to connect to the ubuntu installer ssh session
   locale: en_GB.UTF-8
   keyboard:
-    layout: en
-    variant: uk
+    layout: gb
   identity:
     hostname: ubuntu-server
     # For password crypt, use: mkpasswd -m sha-512
     password: '$6$wdAcoXrU039hKYPd$508Qvbe7ObUnxoj15DRCkzC3qO7edjH0VV7BPNRDYK4QR8ofJaEEF2heacn0QgD.f8pO8SNp83XNdWG6tocBM1'
     username: ubuntu
+  network:
+    network:
+      version: 2
+      ethernets:
+        ens192:
+          dhcp4: true
+          dhcp-identifier: mac
   late-commands:
     # allow ubuntu user to sudo with no pwd
-    - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
+    - "echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu"
+    - "chmod 440 /target/etc/sudoers.d/ubuntu"
     # use mac for dhcp client identifier - stops different ip being allocated after each reboot
     - sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /target/etc/dhcp/dhclient.conf
     - 'sed -i "s/dhcp4: true/&\n      dhcp-identifier: mac/" /target/etc/netplan/00-installer-config.yaml'
